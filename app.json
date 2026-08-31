@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "push-test",
-    "slug": "push-test",
+    "slug": "notifcation-test",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -37,6 +37,13 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
-    }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "24ebf4f9-562d-43e8-8ccc-51691089e1db"
+      }
+    },
+    "owner": "shukrepersonal"
   }
 }

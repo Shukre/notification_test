@@ -41,3 +41,12 @@ example
 # generated native folders
 /ios
 /android
+
+# Additional secrets
+.env
+.env.*
+!.env.example
+credentials.json
+*.keystore
+google-services.json
+GoogleService-Info.plist
