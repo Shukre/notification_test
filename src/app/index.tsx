@@ -9,6 +9,39 @@ import { ThemedView } from '@/components/themed-view';
 import { WebBadge } from '@/components/web-badge';
 import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
 
+import * as Notifications from 'expo-notifications';
+import { Button } from 'react-native';
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldPlaySound: true,
+    shouldSetBadge: false,
+    shouldShowBanner: true,
+    shouldShowList: true,
+  }),
+});
+
+async function scheduleTestNotification() {
+  const { status } = await Notifications.requestPermissionsAsync();
+  if (status !== 'granted') {
+    alert('Permission denied');
+    return;
+  }
+
+  await Notifications.scheduleNotificationAsync({
+    content: {
+      title: 'Hello from your app',
+      body: 'Local notifications are working.',
+    },
+    trigger: {
+      type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
+      seconds: 5,
+    },
+  });
+
+  alert('Scheduled — background the app now');
+}
+
 function getDevMenuHint() {
   if (Platform.OS === 'web') {
     return <ThemedText type="small">use browser devtools</ThemedText>;
@@ -35,9 +68,11 @@ export default function HomeScreen() {
         <ThemedView style={styles.heroSection}>
           <AnimatedIcon />
           <ThemedText type="title" style={styles.title}>
-            Welcome to&nbsp;Expo
+            Welcome to&nbsp;change
           </ThemedText>
         </ThemedView>
+
+        <Button title="Send test notification" onPress={scheduleTestNotification} />
 
         <ThemedText type="code" style={styles.code}>
           get started
