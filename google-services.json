@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "496384509594",
+    "project_id": "androidpushtest-5c7e4",
+    "storage_bucket": "androidpushtest-5c7e4.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:496384509594:android:177549ad8dad1ab27e0123",
+        "android_client_info": {
+          "package_name": "com.shukre.pushtest"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCdGaQDzstGO-BupR-TWD8DiEgHsIfGzkU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

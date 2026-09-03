@@ -48,5 +48,6 @@ example
 !.env.example
 credentials.json
 *.keystore
-google-services.json
 GoogleService-Info.plist
+*firebase-adminsdk*.json
+*service-account*.json

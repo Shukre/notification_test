@@ -21,7 +21,16 @@ Notifications.setNotificationHandler({
   }),
 });
 
+async function setupAndroidChannel() {
+  if (Platform.OS !== 'android') return;
+  await Notifications.setNotificationChannelAsync('default', {
+    name: 'Default',
+    importance: Notifications.AndroidImportance.MAX,
+  });
+}
+
 async function scheduleTestNotification() {
+  await setupAndroidChannel();
   const { status } = await Notifications.requestPermissionsAsync();
   if (status !== 'granted') {
     alert('Permission denied');

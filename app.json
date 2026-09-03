@@ -2,6 +2,7 @@
   "expo": {
     "name": "push-test",
     "slug": "notifcation-test",
+    "owner": "thedeeds",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -15,6 +16,8 @@
       }
     },
     "android": {
+      "package": "com.shukre.pushtest",
+      "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
@@ -46,9 +49,8 @@
     "extra": {
       "router": {},
       "eas": {
-        "projectId": "24ebf4f9-562d-43e8-8ccc-51691089e1db"
+        "projectId": "bcd820fc-2224-4c39-a9b9-f50770d045a5"
       }
-    },
-    "owner": "shukrepersonal"
+    }
   }
 }
