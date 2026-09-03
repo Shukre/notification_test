@@ -1,16 +1,8 @@
+import Constants from 'expo-constants';
 import * as Device from 'expo-device';
-import { Platform, StyleSheet } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-
-import { AnimatedIcon } from '@/components/animated-icon';
-import { HintRow } from '@/components/hint-row';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { WebBadge } from '@/components/web-badge';
-import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
-
 import * as Notifications from 'expo-notifications';
-import { Button } from 'react-native';
+import { useEffect, useState } from 'react';
+import { Button, Platform, StyleSheet, Text, View } from 'react-native';
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -21,122 +13,76 @@ Notifications.setNotificationHandler({
   }),
 });
 
-async function setupAndroidChannel() {
-  if (Platform.OS !== 'android') return;
-  await Notifications.setNotificationChannelAsync('default', {
-    name: 'Default',
-    importance: Notifications.AndroidImportance.MAX,
-  });
+export default function Home() {
+  const [token, setToken] = useState('');
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    register().then(setToken).catch((e) => setError(String(e)));
+
+    const sub = Notifications.addNotificationReceivedListener((n) =>
+      console.log('received:', JSON.stringify(n, null, 2)),
+    );
+    const sub2 = Notifications.addNotificationResponseReceivedListener((r) =>
+      console.log('tapped:', JSON.stringify(r, null, 2)),
+    );
+    return () => {
+      sub.remove();
+      sub2.remove();
+    };
+  }, []);
+
+  return (
+    <View style={styles.container}>
+      <Text style={styles.heading}>Push test</Text>
+
+      <Button title="Local notification (5s)" onPress={sendLocal} />
+
+      <Text style={styles.label}>Push token</Text>
+      <Text selectable style={styles.token}>
+        {error || token || 'loading…'}
+      </Text>
+    </View>
+  );
 }
 
-async function scheduleTestNotification() {
-  await setupAndroidChannel();
-  const { status } = await Notifications.requestPermissionsAsync();
-  if (status !== 'granted') {
-    alert('Permission denied');
-    return;
+async function register() {
+  if (!Device.isDevice) throw new Error('Needs a physical device');
+
+  if (Platform.OS === 'android') {
+    await Notifications.setNotificationChannelAsync('default', {
+      name: 'Default',
+      importance: Notifications.AndroidImportance.MAX,
+    });
   }
 
+  const { status: existing } = await Notifications.getPermissionsAsync();
+  let final = existing;
+  if (existing !== 'granted') {
+    final = (await Notifications.requestPermissionsAsync()).status;
+  }
+  if (final !== 'granted') throw new Error('Permission denied');
+
+  const projectId =
+    Constants?.expoConfig?.extra?.eas?.projectId ?? Constants?.easConfig?.projectId;
+  if (!projectId) throw new Error('No EAS project ID');
+
+  return (await Notifications.getExpoPushTokenAsync({ projectId })).data;
+}
+
+async function sendLocal() {
   await Notifications.scheduleNotificationAsync({
-    content: {
-      title: 'Hello from your app',
-      body: 'Local notifications are working.',
-    },
+    content: { title: 'Hello', body: 'Local notification works.' },
     trigger: {
       type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
       seconds: 5,
     },
   });
-
-  alert('Scheduled — background the app now');
-}
-
-function getDevMenuHint() {
-  if (Platform.OS === 'web') {
-    return <ThemedText type="small">use browser devtools</ThemedText>;
-  }
-  if (Device.isDevice) {
-    return (
-      <ThemedText type="small">
-        shake device or press <ThemedText type="code">m</ThemedText> in terminal
-      </ThemedText>
-    );
-  }
-  const shortcut = Platform.OS === 'android' ? 'cmd+m (or ctrl+m)' : 'cmd+d';
-  return (
-    <ThemedText type="small">
-      press <ThemedText type="code">{shortcut}</ThemedText>
-    </ThemedText>
-  );
-}
-
-export default function HomeScreen() {
-  return (
-    <ThemedView style={styles.container}>
-      <SafeAreaView style={styles.safeArea}>
-        <ThemedView style={styles.heroSection}>
-          <AnimatedIcon />
-          <ThemedText type="title" style={styles.title}>
-            Welcome to&nbsp;change
-          </ThemedText>
-        </ThemedView>
-
-        <Button title="Send test notification" onPress={scheduleTestNotification} />
-
-        <ThemedText type="code" style={styles.code}>
-          get started
-        </ThemedText>
-
-        <ThemedView type="backgroundElement" style={styles.stepContainer}>
-          <HintRow
-            title="Try editing"
-            hint={<ThemedText type="code">src/app/index.tsx</ThemedText>}
-          />
-          <HintRow title="Dev tools" hint={getDevMenuHint()} />
-          <HintRow
-            title="Fresh start"
-            hint={<ThemedText type="code">npm run reset-project</ThemedText>}
-          />
-        </ThemedView>
-
-        {Platform.OS === 'web' && <WebBadge />}
-      </SafeAreaView>
-    </ThemedView>
-  );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    flexDirection: 'row',
-  },
-  safeArea: {
-    flex: 1,
-    paddingHorizontal: Spacing.four,
-    alignItems: 'center',
-    gap: Spacing.three,
-    paddingBottom: BottomTabInset + Spacing.three,
-    maxWidth: MaxContentWidth,
-  },
-  heroSection: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    flex: 1,
-    paddingHorizontal: Spacing.four,
-    gap: Spacing.four,
-  },
-  title: {
-    textAlign: 'center',
-  },
-  code: {
-    textTransform: 'uppercase',
-  },
-  stepContainer: {
-    gap: Spacing.three,
-    alignSelf: 'stretch',
-    paddingHorizontal: Spacing.three,
-    paddingVertical: Spacing.four,
-    borderRadius: Spacing.four,
-  },
+  container: { flex: 1, justifyContent: 'center', padding: 24, gap: 16 },
+  heading: { fontSize: 22, fontWeight: '600' },
+  label: { fontSize: 12, opacity: 0.6, marginTop: 12 },
+  token: { fontSize: 10, fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace' },
 });
