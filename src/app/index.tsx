@@ -35,9 +35,10 @@ async function register() {
   if (!Device.isDevice) throw new Error('Needs a physical device');
 
   if (Platform.OS === 'android') {
-    await Notifications.setNotificationChannelAsync('default', {
-      name: 'Default',
+    await Notifications.setNotificationChannelAsync('adhan-short', {
+      name: 'Adhan',
       importance: Notifications.AndroidImportance.MAX,
+      sound: 'Allahuakbar_Allahuakbar_notification.wav',
     });
   }
 

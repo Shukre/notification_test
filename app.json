@@ -44,7 +44,7 @@
         "expo-notifications",
         {
           "sounds": [
-            "./assets/sounds/Allahuakbar_Allahuakbar_notification.wav"
+            "./assets/sounds/adhan_short.wav"
           ]
         }
       ]
