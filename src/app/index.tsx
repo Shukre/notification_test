@@ -38,7 +38,7 @@ async function register() {
     await Notifications.setNotificationChannelAsync('adhan-short', {
       name: 'Adhan',
       importance: Notifications.AndroidImportance.MAX,
-      sound: 'Allahuakbar_Allahuakbar_notification.wav',
+      sound: 'adhan_short.wav',
     });
   }
 
